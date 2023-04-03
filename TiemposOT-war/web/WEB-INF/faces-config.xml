@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <navigation-rule>
+        <display-name>Menu</display-name>
+        <from-view-id>/paginas/*</from-view-id>
+        <navigation-case>
+            <from-outcome>registro</from-outcome>
+            <to-view-id>/paginas/registro.jsf</to-view-id>
+            <redirect />
+        </navigation-case>  
+        <navigation-case>
+            <from-outcome>menu</from-outcome>
+            <to-view-id>/paginas/index.jsf</to-view-id>
+            <redirect />
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>historial</from-outcome>
+            <to-view-id>/paginas/historial.jsf</to-view-id>
+            <redirect />
+        </navigation-case>   
+        <navigation-case>
+            <from-outcome>usuarios</from-outcome>
+            <to-view-id>/paginas/usuarios.jsf</to-view-id>
+            <redirect />
+        </navigation-case>       
+    </navigation-rule> 
+</faces-config>

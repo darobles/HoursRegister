@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                template="../include/template/template.xhtml">
+    <ui:define name="content">        
+        <style>
+            .main-container{
+                margin-top: 50px;
+            }
+        </style>
+        <div class="container main-container">
+            <h:outputStylesheet library="primefaces-bootstrap" name="theme.css" />
+            <h:form id="form1" >
+                <p:confirmDialog global="true">
+                    <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+                </p:confirmDialog>
+                <p:panelGrid columns="1" style="vertical-align: top;">
+                    <p:dataTable value="#{usuarioBacking.listaUsuarios}" var="usuario"  
+                                 id="table"
+                                 emptyMessage="Sin equipo registrados." selectionMode="single" 
+                                 paginator="true" rows="10"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+                                 paginatorPosition="bottom"
+                                 rowKey="#{usuario.id}"
+                                 style="text-align: center;font-weight:bold; font-size:12px;"
+                                 selection="#{usuarioBacking.usuarioSeleccionado}"
+                                 widgetVar="table">
+                        <p:column  headerText="Identificador" filterStyle="width:70px;" style="text-align: center;font-weight:bold; font-size:12px;" sortBy="#{usuario.id}" filterBy="#{usuario.idUsr}" filterMatchMode="contains">
+                            <h:outputText value="#{usuario.idUsr}"/>
+                        </p:column>
+                        <p:column  headerText="Nombre" filterStyle="width:70px;" style="text-align: center;font-weight:bold; font-size:12px;" sortBy="#{usuario.nomUsr}" filterBy="#{usuario.nomUsr}" filterMatchMode="contains">
+                            <h:outputText value="#{usuario.nomUsr}"/>
+                        </p:column>
+                        <p:column  headerText="Apellido Paterno" filterStyle="width:70px;" style="text-align: center;font-weight:bold; font-size:12px;" sortBy="#{usuario.apePat}" filterBy="#{usuario.apePat}" filterMatchMode="contains">
+                            <h:outputText value="#{usuario.apePat}"/>
+                        </p:column>
+                        <p:column  headerText="Apellido Materno" filterStyle="width:70px;" style="text-align: center;font-weight:bold; font-size:12px;" sortBy="#{usuario.apeMat}" filterBy="#{usuario.apeMat}" filterMatchMode="contains">
+                            <h:outputText value="#{usuario.apeMat}"/>
+                        </p:column>
+                        <p:column  headerText="Email" filterStyle="width:70px;" style="text-align: center;font-weight:bold; font-size:12px;" sortBy="#{usuario.emaUsr}" filterBy="#{usuario.emaUsr}" filterMatchMode="contains">
+                            <h:outputText value="#{usuario.emaUsr}"/>
+                        </p:column>
+                        <p:column style="text-align: center;font-weight:bold; font-size:12px; ">
+                            <f:facet  name="header">Acción</f:facet>
+                            <p:commandLink action="#{usuarioBacking.abrirEditarUsuario()}" update="form3:popup" onclick="PF('popup').show();" style="color: black !important;">
+                                <span class="fa fa-edit"  style="font-size: 18px;"></span>
+                                <f:setPropertyActionListener target="#{usuarioBacking.usuarioSeleccionado}" value="#{usuario}"/>
+                            </p:commandLink>
+                            <p:commandLink   id="deletelink" update="@form" action="#{usuarioBacking.eliminarUsuario}" title="Eliminar" style="color: black !important;">
+                                <span class="fa fa-times" style="font-size: 20px;"></span>
+                                <f:setPropertyActionListener target="#{usuarioBacking.usuarioSeleccionado}" value="#{usuario}"/>
+                                <p:confirm header="Confirmación" message="¿Estas seguro que deseas eliminar el usuario #{usuario.id}?" icon="ui-icon-alert" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panelGrid>
+                <br></br>
+                <h:commandButton value="Crear" class="btn btn-primary" style="font-size: 12px; font-weight: bold;" action="#{usuarioBacking.verCrearUsuario()}">
+                    <f:ajax render=":form1:table form2:popupIngresar" />
+                </h:commandButton>              
+            </h:form>
+
+            <h:form id="form2"> 
+                <p:dialog id="popupIngresar" widgetVar="popupIngresar"
+                          header="Ingresar Usuario"
+                          visible="#{usuarioBacking.verPopupIngresar}"
+                          width="900"
+                          hideEffect="drop">
+
+                    <p:tab title="Datos Usuario" >
+                        <h:panelGrid columns="4"  styleClass="tabla-modificar" >
+                            <h:outputLabel value="Usuario :"/>    
+                            <p:inputText id="idUsuario" value="#{usuarioBacking.usuarioNuevo.idUsr}" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />                           
+                            <h:outputLabel value="Nombre :"/>    
+                            <p:inputText id="idNombre" value="#{usuarioBacking.usuarioNuevo.nomUsr}" size="40" onkeydown="eventoSalidaLetra(this, event, '', '');" onkeypress="return validarLetras(this, event);" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />  
+
+                            <h:outputLabel />
+                            <p:message for="idUsuario" style="font-size: 13px; color: red;"  />
+                            <h:outputLabel />
+                            <p:message for="idNombre" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Apellido Paterno :"/>    
+                            <p:inputText id="idApaterno" value="#{usuarioBacking.usuarioNuevo.apePat}" size="40" onkeydown="eventoSalidaLetra(this, event, '', '');" onkeypress="return validarLetras(this, event);" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />  
+                            <h:outputLabel value="Apellido Materno :"/>    
+                            <p:inputText id="idAmaterno" value="#{usuarioBacking.usuarioNuevo.apeMat}" size="40" onkeydown="eventoSalidaLetra(this, event, '', '');" onkeypress="return validarLetras(this, event);" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />  
+
+                            <h:outputLabel />
+                            <p:message for="idApaterno" style="font-size: 13px; color: red;"  />
+                            <h:outputLabel />
+                            <p:message for="idAmaterno" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Ind Activo :"/>    
+                            <p:selectBooleanCheckbox value="#{usuarioBacking.usuarioNuevo.indAct}" itemLabel="Activo"/>
+
+                            <h:outputLabel value="Mail :"/>    
+                            <p:inputText id="idEmail" value="#{usuarioBacking.usuarioNuevo.emaUsr}" size="40" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();"/> 
+
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <p:message for="idEmail" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Tipo Usuario :"/>    
+                            <p:selectOneMenu  id="idComunaPopUp" value="#{usuarioBacking.usuarioNuevo.tipo}" style="width: 90%;">
+                                <f:selectItem itemLabel="Usuario" itemValue="USER" />
+                                <f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
+                            </p:selectOneMenu> 
+
+                            <h:outputLabel value="Horas Maximas :"/>    
+                            <p:inputNumber id="idMaxHrs" value="#{usuarioBacking.usuarioNuevo.horasMax}" minValue="-1" maxValue="24" decimalPlaces="0" size="40" style="width: 90.5%;"/> 
+
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <h:outputLabel />
+
+                            <h:outputLabel value="Clave :"/>    
+                            <p:password id="idClave" value="#{usuarioBacking.usuarioNuevo.pasUsr}" redisplay="true" style="width: 90.5%;"/>                                             
+                            <h:outputLabel value="Confirmar clave :"/>    
+                            <p:password id="idClave2" value="#{usuarioBacking.usuarioNuevo.pasUsr2}" redisplay="true" style="width: 90.5%;"/> 
+
+                            <h:outputLabel />
+                            <p:message for="idClave" style="font-size: 13px; color: red;"  />
+                            <h:outputLabel />
+                            <p:message for="idClave2" style="font-size: 13px; color: red;"  />
+
+                        </h:panelGrid>
+                    </p:tab>
+                    <h:panelGrid columns="1">
+                        <p:commandButton value="Crear"  action="#{usuarioBacking.crearUsuario()}" update=":form1:table popupIngresar" />      
+                    </h:panelGrid>
+
+                </p:dialog>
+            </h:form>
+            <h:form id="form3">
+                <p:dialog id="popup" widgetVar="popup"
+                          header="Editar Usuario"
+                          visible="#{usuarioBacking.verPopup}"
+                          width="900"
+                          hideEffect="drop">
+                    <p:ajax event="close" listener="#{usuarioBacking.cerrarDlgEdit()}"/>
+
+                    <p:tab title="Datos Usuario" >
+                        <h:panelGrid columns="4"  styleClass="tabla-modificar" >
+                            <h:outputLabel value="Usuario :"/>    
+                            <p:inputText id="idUsuario" value="#{usuarioBacking.usuarioSeleccionado.idUsr}" readonly="true" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />                           
+                            <h:outputLabel value="Nombre :"/>    
+                            <p:inputText id="idNombre" value="#{usuarioBacking.usuarioSeleccionado.nomUsr}" size="40" onkeydown="eventoSalidaLetra(this, event, '', '');" onkeypress="return validarLetras(this, event);" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />  
+
+                            <h:outputLabel />
+                            <p:message for="idUsuario" style="font-size: 13px; color: red;"  />
+                            <h:outputLabel />
+                            <p:message for="idNombre" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Apellido Paterno :"/>    
+                            <p:inputText id="idApaterno" value="#{usuarioBacking.usuarioSeleccionado.apePat}" size="40" onkeydown="eventoSalidaLetra(this, event, '', '');" onkeypress="return validarLetras(this, event);" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />  
+                            <h:outputLabel value="Apellido Materno :"/>    
+                            <p:inputText id="idAmaterno" value="#{usuarioBacking.usuarioSeleccionado.apeMat}" size="40" onkeydown="eventoSalidaLetra(this, event, '', '');" onkeypress="return validarLetras(this, event);" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();" />  
+
+                            <h:outputLabel />
+                            <p:message for="idApaterno" style="font-size: 13px; color: red;"  />
+                            <h:outputLabel />
+                            <p:message for="idAmaterno" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Ind Activo :"/>    
+                            <p:selectBooleanCheckbox value="#{usuarioBacking.usuarioSeleccionado.indAct}" itemLabel="Activo"/>
+                            <h:outputLabel value="Mail :"/>    
+                            <p:inputText id="idEmail" value="#{usuarioBacking.usuarioSeleccionado.emaUsr}" size="40" style="text-transform:uppercase;width: 90.5%;" onkeyup="javascript:this.value = this.value.toUpperCase();"/> 
+
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <p:message for="idEmail" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Tipo Usuario :"/>    
+                            <p:selectOneMenu  id="idComunaPopUp" value="#{usuarioBacking.usuarioSeleccionado.tipo}" style="width: 90%;" >
+                                <f:selectItem itemLabel="Usuario" itemValue="USER" />
+                                <f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
+                            </p:selectOneMenu> 
+
+                            <h:outputLabel value="Horas Maximas :"/>    
+                            <p:inputNumber id="idMaxHrs" value="#{usuarioBacking.usuarioSeleccionado.horasMax}" minValue="-1" maxValue="24" decimalPlaces="0" validatorMessage="Debe Ingresar un valor valido." size="40" style="width: 90.5%;"/> 
+
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <h:outputLabel />
+                            <p:message for="idMaxHrs" style="font-size: 13px; color: red;"  />
+
+                            <h:outputLabel value="Clave :"/>    
+                            <p:password id="idClave" value="#{usuarioBacking.usuarioSeleccionado.pasUsr}" redisplay="true" style="width: 90.5%;"/>                                             
+                            <h:outputLabel value="Confirmar clave :"/>    
+                            <p:password id="idClave2" value="#{usuarioBacking.usuarioSeleccionado.pasUsr2}" redisplay="true" style="width: 90.5%;"/> 
+
+                            <h:outputLabel />
+                            <p:message for="idClave" style="font-size: 13px; color: red;"  />
+                            <h:outputLabel />
+                            <p:message for="idClave2" style="font-size: 13px; color: red;"  />
+
+                        </h:panelGrid>               
+                    </p:tab>
+                    <h:panelGrid columns="1">
+                        <p:commandButton value="Guardar" action="#{usuarioBacking.editarUsuario()}" update=":form1:table popup" />                   
+                    </h:panelGrid>   
+
+                </p:dialog>
+            </h:form>
+            <script>
+                if (window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.href);
+                }
+            </script>
+        </div>
+    </ui:define>
+</ui:composition>

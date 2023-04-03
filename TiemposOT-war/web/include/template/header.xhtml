@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition>
+            <h:outputStylesheet library="awesome" name="css/font-awesome.css" />            
+            <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #001f4e;">
+               <!-- <img src="../resources/imagenes/logo-auter.png" height="40" class="align-center" alt=""/> -->
+                <a class="navbar-brand" href="#">
+                    Gestión de Horas
+                </a>
+                <img></img>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item #{view.viewId eq '/paginas/registro.xhtml' ? 'active' : ''}" >
+                            <h:link class="nav-link" outcome="registro">Registrar<span class="sr-only"></span></h:link>
+                        </li>
+                        <li class="nav-item #{view.viewId eq '/paginas/historial.xhtml' ? 'active' : ''}">
+                            <h:link class="nav-link" outcome="historial">Historial<span class="sr-only"></span></h:link>
+                        </li>
+                        <li class="nav-item #{view.viewId eq '/paginas/usuarios.xhtml' ? 'active' : ''}">
+                            <h:panelGrid rendered="#{usuarioBacking.usurioAutenticado().tipo eq 'ADMIN' ? true: false}">
+                                <h:link class="nav-link" outcome="usuarios">Administrar<span class="sr-only" ></span></h:link>
+                            </h:panelGrid>
+                        </li>
+                    </ul>
+                    <span class="text-white">
+                        Hola #{loginBacking.usuario.nomUsr}
+                    </span>
+                    <h:form>
+                        <h:commandLink action="#{loginBacking.logout()}" style="margin-left: 20px; color: white !important;">
+                            <span class="fa fa-sign-out"></span>
+                        </h:commandLink>
+                    </h:form>
+                </div>
+            </nav>
+        </ui:composition>
+    </body>
+</html>

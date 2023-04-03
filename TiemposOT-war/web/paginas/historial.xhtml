@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets" 
+                xmlns:h="http://java.sun.com/jsf/html"
+                template="../include/template/template.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content" >
+    
+        <style type="text/css">
+            .value {
+                width: 1000px;
+            }
+            .fc-time, .hide-time {
+                display:none;
+            }
+        </style>
+        <style>
+            .main-container{
+                margin-top: 50px;
+            }
+            div[id="growlForm:growl-fatal_container"] > div {
+                background-color: black !important;
+            }
+
+            div[id="growlForm:growl-error_container"] > div {
+                background-color: red !important;
+            }
+
+            div[id="growlForm:growl-warning_container"] > div{
+                background-color: orange !important;
+            }
+
+            div[id="growlForm:growl-success_container"] > div{
+                background-color: green !important;
+            }
+
+            .ui-growl-image-info ~ .ui-growl-message {
+                color:#fff;
+            }
+            .ui-growl-image-error ~ .ui-growl-message {
+                color:#fff;
+            }
+            .ui-growl-image-warn ~ .ui-growl-message {
+                color:#fff;
+            }
+            .ui-growl-image-fatal~ .ui-growl-message {
+                color:#fff;
+            }
+        </style>
+        <script>
+            function init() {
+                $(".ui-growl-image-info").parent().parent().addClass("g-info");
+                $(".ui-growl-image-warn").parent().parent().addClass("g-warn");
+                $(".ui-growl-image-error").parent().parent().addClass("g-error");
+                $(".ui-growl-image-fatal").parent().parent().addClass("g-fatal");
+            }
+        </script>
+        <div class="container main-container">
+            <script src="../resources/calendar_es.js" type="text/javascript"></script>
+            <script src="../resources/primefaces_i18n.js" type="text/javascript"></script>
+            <h:outputStylesheet library="primefaces-bootstrap" name="theme.css" />
+            <h:form id="growlForm">
+                <p:growl id="growl-fatal" showDetail="true" life="2000" rendered="#{facesContext.maximumSeverity.ordinal eq 3}"/>
+                <p:growl id="growl-error" showDetail="true" life="2000" rendered="#{facesContext.maximumSeverity.ordinal eq 2}"/>
+                <p:growl id="growl-warning" showDetail="true" life="2000" rendered="#{facesContext.maximumSeverity.ordinal eq 1}"/>
+                <p:growl id="growl-success" showDetail="true" life="2000" rendered="#{facesContext.maximumSeverity.ordinal eq 0}"/>
+            </h:form>
+            <h:form id="form2">                
+                <h:panelGrid columnClasses="value">
+                    <p:schedule id="schedule" locale="es" value="#{historialBacking.eventModel}" widgetVar="myschedule" >
+
+                        <p:ajax event="dateSelect" listener="#{historialBacking.onDateSelect}" />
+                        <p:ajax event="eventSelect" listener="#{historialBacking.onEventSelect}" />
+                        <p:ajax event="eventMove" listener="#{historialBacking.onEventMove}" />
+                        <p:ajax event="eventResize" listener="#{historialBacking.onEventResize}" />
+
+                    </p:schedule>
+                </h:panelGrid>
+                
+                                <h:panelGrid id="pnlTable" columns="1">
+                    <p:dataTable var="ot" value="#{historialBacking.listaRegistros}"  
+                                 selection="#{historialBacking.regSel}"
+                                 rows="10"
+                                 selectionMode="single"
+                                 emptyMessage="Sin horas registradas."
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 style="text-align: center;font-weight:bold; font-size:12px;"
+                                 rowKey="#{ot.id}">
+                        <p:column headerText="Id" rendered="false" style="text-align: center;font-weight:bold; font-size:12px;">
+                            <h:outputText value="#{ot.id}" />
+                        </p:column>
+
+                        <p:column headerText="Orden de Trabajo" filterMatchMode="contains"  filterBy="#{ot.nroOt}" sortBy="#{ot.nroOt}" filterStyle="width:45%;" width="5%" style="text-align: center;font-weight:bold; font-size:12px;">
+                            <h:outputText value="#{ot.nroOt}" />
+                        </p:column>
+
+                        <p:column headerText="Tiempo" filterMatchMode="contains"  filterBy="#{ot.tiempo}" sortBy="#{ot.tiempo}" filterStyle="width:75px;" width="5%" style="text-align: center;font-weight:bold; font-size:12px;">
+                            <h:outputText value="#{ot.tiempo}" />
+                        </p:column>
+
+                        <p:column headerText="Fecha" filterMatchMode="contains"  filterBy="#{ot.fecha_str}" sortBy="#{ot.fecha}" filterStyle="width:75px;" width="5%" style="text-align: center;font-weight:bold; font-size:12px;">
+                            <h:outputText value="#{ot.fecha}">
+                                <f:convertDateTime timeZone="GMT-3" pattern="dd-MM-yyyy " />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha Ingreso" filterMatchMode="contains"  filterBy="#{ot.fechaIngreso_str}" sortBy="#{ot.fechaIngreso}" filterStyle="width:75px;" width="5%" style="text-align: center;font-weight:bold; font-size:12px;">
+                            <h:outputText value="#{ot.fechaIngreso}">
+                                <f:convertDateTime timeZone="GMT-3" pattern="dd-MM-yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+                <br></br>
+                <h:commandButton class="btn btn-primary" value="Eliminar"  onclick="if (! confirm('Esta saguro que desea eliminar el registro?')) return false"
+                actionListener="#{historialBacking.eliminarReg}" >
+                    <f:ajax execute="@form" render="pnlTable" />
+                </h:commandButton>
+                <br></br>
+            </h:form>
+            <script>
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+            </script>
+        </div>
+    </ui:define>
+</ui:composition>
